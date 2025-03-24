@@ -8,15 +8,22 @@ export class EvaluationService {
     const results: EvaluationResult[] = [];
 
     for (const doc of request.documents) {
-      const formattedContent = `####${JSON.stringify(doc)}####`;
+      const formattedContent = `
+      Document ID: ${doc.id}
+      Title: ${doc.title}
+      Content: ${doc.content}
+    `;
       const messages = [
         { role: 'system', content: SYSTEM_MESSAGE },
         { role: 'user', content: formattedContent },
       ];
 
       const response = await getCompletionFromMessages(messages);
-      results.push(JSON.parse(response));
-    }
+    const result = JSON.parse(response);
+    result.document_id = doc.id; 
+    results.push(result);
+  }
+
 
     return { results };
   }
@@ -55,7 +62,7 @@ Final Decision:
 For each document, provide a structured JSON output with detailed evaluation:
 
 {
-  "document_id": "type": "integer",
+  "document_id": "type": "integer",(MUST match the provided ID exactly)
   "completeness": "High/Medium/Low",
   "clarity": "High/Medium/Low",
   "relevance": "High/Medium/Low",
@@ -67,14 +74,12 @@ For each document, provide a structured JSON output with detailed evaluation:
   "contradictions": "None/Low/Medium/High",
   "repetition_across_files": "None/Low/Medium/High",
   "new_value": "High/Medium/Low",
-  "is_valid": true/false,  
+  "is_valid": true/false,  (calculated based on weighted scores)
   "mistakes": {
     "grammar": "List of grammar issues if any",
     "formatting": "Issues related to structure, headings, or bullet points",
     "redundancy": "Mention if any repeated information was found"
   },
--The field "document_id" should always match the original document ID provided in the request.
-
  
 }
 `;
