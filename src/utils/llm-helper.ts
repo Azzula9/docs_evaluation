@@ -1,30 +1,18 @@
-import 'dotenv/config';
-import { OpenAI } from 'openai';
-import { JSONSchema } from 'openai/lib/jsonschema';
-import { ResponseFormatJSONObject } from 'openai/resources/shared';
+import { ChatOpenAI } from '@langchain/openai';
+import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, 
+const llm = new ChatOpenAI({
+  modelName: "gpt-4o-mini",
+  temperature: 0,
+  openAIApiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function getCompletionFromMessages(
-  messages: any[],
-  model: string = 'gpt-4o-mini',
-  temperature: number = 0,
-  max_tokens: number = 3000,
-): Promise<string> {
+export async function getCompletionFromMessages(messages: any[]): Promise<string> {
   try {
-    const response = await openai.chat.completions.create({
-      model,
-      messages,
-      temperature,
-      max_tokens,
-      response_format: { type: 'json_object' } 
-    });
-
-    return response.choices[0].message?.content || '{}';
+    const response = await llm.call(messages);
+    return response.text;
   } catch (error) {
-    console.error('Error fetching response from OpenAI:', error);
-    throw new Error('Failed to get completion from OpenAI.');
+    console.error("Error fetching response from OpenAI:", error);
+    throw new Error("Failed to get completion from OpenAI.");
   }
 }

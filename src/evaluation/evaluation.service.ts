@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { getCompletionFromMessages } from '../utils/llm-helper';
 import { EvaluateRequest, EvaluateResponse, EvaluationResult } from './interfaces/evaluation.interface';
+import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 
 @Injectable()
 export class EvaluationService {
@@ -13,17 +14,17 @@ export class EvaluationService {
       Title: ${doc.title}
       Content: ${doc.content}
     `;
+
       const messages = [
-        { role: 'system', content: SYSTEM_MESSAGE },
-        { role: 'user', content: formattedContent },
+        new SystemMessage(SYSTEM_MESSAGE),
+        new HumanMessage(formattedContent),
       ];
 
       const response = await getCompletionFromMessages(messages);
-    const result = JSON.parse(response);
-    result.document_id = doc.id; 
-    results.push(result);
-  }
-
+      const result = JSON.parse(response);
+      result.document_id = doc.id; 
+      results.push(result);
+    }
 
     return { results };
   }
@@ -80,7 +81,5 @@ For each document, provide a structured JSON output with detailed evaluation:
     "formatting": "Issues related to structure, headings, or bullet points",
     "redundancy": "Mention if any repeated information was found"
   },
- 
 }
 `;
-
