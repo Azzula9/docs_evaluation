@@ -11,7 +11,7 @@ message EvaluateRequest {
 }
 
 message Document {
-  int32 id = 1;
+  int32 document_id = 1;
   string title = 2;
   string content = 3;
 }

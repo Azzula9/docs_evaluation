@@ -30,7 +30,7 @@ export interface EvaluateResponse {
 }
 
 export interface Document {
-  id: number;
+  document_id: number;
   title: string;
   content: string;
 }

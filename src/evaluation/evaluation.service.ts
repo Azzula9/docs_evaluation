@@ -10,7 +10,7 @@ export class EvaluationService {
 
     for (const doc of request.documents) {
       const formattedContent = `
-      Document ID: ${doc.id}
+      Document ID: ${doc.document_id}
       Title: ${doc.title}
       Content: ${doc.content}
     `;
@@ -21,8 +21,9 @@ export class EvaluationService {
       ];
 
       const response = await getCompletionFromMessages(messages);
+      console.log("LLM Response:", response); 
+
       const result = JSON.parse(response);
-      result.document_id = doc.id; 
       results.push(result);
     }
 
